@@ -7,6 +7,7 @@ from yolo.frontend import create_yolo
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from itertools import permutations
 
 def detector(image_loc):
     # 1. create yolo instance
@@ -25,8 +26,8 @@ def detector(image_loc):
         img = cv2.imread(fname)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         imgs.append(img)
-        plt.imshow(img)
-        plt.show()
+        #plt.imshow(img)
+        #plt.show()
         
     # 4. Predict digit region
     THRESHOLD = 0.3
@@ -46,3 +47,24 @@ def get_number(prob_buffer):
     for val in output_vector:
         output += str(val)
     return output
+
+def check_if_correct(answer_value, detect):
+    answer_len = len(answer_value)
+    detection_len = len(detect)
+    tracker = answer_len
+    av_array = []
+    detect_array = []
+
+    for i in answer_value:
+        av_array.append(int(i))
+
+    for i in detect:
+        detect_array.append(int(i))
+
+    while tracker <= detection_len:
+        perms = permutations(detect_array, tracker)
+        for values in perms:
+            if values == tuple(av_array):
+                return int(answer_value)
+        tracker += 1
+    return int(detect) 
